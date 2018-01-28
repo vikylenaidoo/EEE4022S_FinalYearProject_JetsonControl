@@ -82,6 +82,7 @@ int uart_init(UART_ttyDevice device, int *serial_port){
 
     if(device == ttyUSB0){
         tty.c_cflag &= ~CSTOPB; //single stop bit
+        //tty.c_cc[VTIME] = 1;
 
         cfsetispeed(&tty, B9600); //input baud
         cfsetospeed(&tty, B9600); //output baud
@@ -106,6 +107,13 @@ int uart_read(int *serial_port, void *uart_read_buffer, size_t size){
 
     return read(*serial_port, uart_read_buffer, size);
 
+}
+
+/**
+ * write bytes to uart
+*/
+int uart_write(int *serial_port, char data[], size_t length){
+    return write(*serial_port, data, length);
 }
 
 /*close the serial port*/

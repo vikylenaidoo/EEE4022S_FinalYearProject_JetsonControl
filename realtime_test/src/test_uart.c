@@ -26,7 +26,9 @@ int main(){
     struct timespec deadline;
     deadline.tv_sec = 0;//1;//5;
     deadline.tv_nsec = 500000000;//500000000;//4000000;
-    
+
+    periodic_info_Struct xb_info;
+    make_periodic(100, &xb_info); //4ms
 
     isActive = 1;
     
@@ -47,6 +49,7 @@ int main(){
             printf("%s \n", xbee_read_buffer);
 
         }
+        //printf("n\n");
 
        // gpio_set_value(gpio_port, GPIO_LOW);
 
@@ -61,9 +64,8 @@ int main(){
 
         }
         */
-        if(clock_nanosleep(CLOCK_MONOTONIC, 0, &deadline, NULL)){
-            //printf("sleep error !!!\n");
-        }
+        //if(clock_nanosleep(CLOCK_MONOTONIC, 0, &deadline, NULL));
+        wait_period(&xb_info);
         
     }
 

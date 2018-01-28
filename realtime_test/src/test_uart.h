@@ -3,6 +3,7 @@
 #include <signal.h>
 
 #include "tasks/uart.h"
+#include "tasks/timer.h"
 //#include "tasks/gpio.h"
 //#include "tasks/sensor_handler.h"
 
