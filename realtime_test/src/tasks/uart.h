@@ -16,8 +16,9 @@
 //---------------------- DEFINES --------------------------//
 
 typedef enum{
-    ttyTHS1,
-    ttyUSB0
+    ttyTHS1,    //used for sensor board comms
+    ttyUSB0,    //used for xbee telemetry comms
+    ttyACM0     //used for pololu servo driver
 
 } UART_ttyDevice;
 

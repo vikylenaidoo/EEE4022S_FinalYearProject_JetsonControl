@@ -7,26 +7,48 @@
 Servo_Error_Typedef servo_set_target(int *serial_port, uint8_t channel, unsigned int target){
     Servo_Error_Typedef e = SERVO_OK;
 
-    if((target<=3280 && target>=992) || target==0){
-        target *= 4;
-        uint8_t message[4];
+    //check terget bounds
+    if(target!=0){
+        
+        switch (channel){
+            case 0:
+                if(target>MAX_WIDTH_CHANNEL_0 || target<MIN_WIDTH_CHANNEL_0){
+                    return SERVO_TARGET_BOUNDS_ERROR;
+                }
+                break;
+                
+            case 1:
+                if(target>MAX_WIDTH_CHANNEL_1 || target<MIN_WIDTH_CHANNEL_1){
+                    return SERVO_TARGET_BOUNDS_ERROR;
+                }
+                break;
 
-        //write message
-        message[0] = 0x84; // Command byte: Set Target.
-        message[1] = channel; // First data byte holds channel number.
-        message[2] = target & 0x7F; // Second byte holds the lower 7 bits of target.
-        message[3] = (target >> 7) & 0x7F;
-        
-        uart_write(serial_port, message, sizeof(message));
-        
-        //printf("%x %x %x %x\n", message[0], message[1], message[2], message[3]);
-        e = servo_get_errors(serial_port);
-    }
-    else{
-        e = SERVO_TARGET_BOUNDS_ERROR;
+            case 2:
+                if(target>MAX_WIDTH_CHANNEL_2 || target<MIN_WIDTH_CHANNEL_2){
+                    return SERVO_TARGET_BOUNDS_ERROR;
+                }
+                break;
+            
+            default:
+                break;
+        }
     }
     
-    return e;
+
+   
+    target *= 4;
+    uint8_t message[4];
+
+    //write message
+    message[0] = 0x84; // Command byte: Set Target.
+    message[1] = channel; // First data byte holds channel number.
+    message[2] = target & 0x7F; // Second byte holds the lower 7 bits of target.
+    message[3] = (target >> 7) & 0x7F;
+    
+    uart_write(serial_port, message, sizeof(message));
+    
+    printf("%x %x %x %x\n", message[0], message[1], message[2], message[3]);
+    return servo_get_errors(serial_port);
 
 }
 
@@ -47,7 +69,7 @@ Servo_Error_Typedef servo_get_errors(int *serial_port){
 
     //read errors
     uint8_t error[2];
-    int n = serial_read(serial_port, error, sizeof(error));
+    int n = uart_read(serial_port, error, sizeof(error));
 
     //printf("%x %x\n", error[0], error[1]);
 

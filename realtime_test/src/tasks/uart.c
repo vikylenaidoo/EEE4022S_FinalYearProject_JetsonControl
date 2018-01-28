@@ -31,6 +31,9 @@ int uart_init(UART_ttyDevice device, int *serial_port){
     case ttyUSB0:
         *serial_port = open("/dev/ttyUSB0", O_RDWR);
         break;
+    case ttyACM0:
+        *serial_port = open("/dev/ttyACM0", O_RDWR);
+        break;
     default:
         *serial_port = -1;
         break;
@@ -80,11 +83,16 @@ int uart_init(UART_ttyDevice device, int *serial_port){
     cfsetispeed(&tty, B460800); //input baud
     cfsetospeed(&tty, B460800); //output baud
 
-    if(device == ttyUSB0){
+    if(device == ttyUSB0){ //xbee
         tty.c_cflag &= ~CSTOPB; //single stop bit
         //tty.c_cc[VMIN] = 10; //message size is 10 bytes
         //tty.c_cc[VTIME] = 1; //timeout (ds)
 
+        cfsetispeed(&tty, B9600); //input baud
+        cfsetospeed(&tty, B9600); //output baud
+    }
+    if(device==ttyACM0){ //pololu servo driver
+        tty.c_cflag &= ~CSTOPB; //single stop bit
         cfsetispeed(&tty, B9600); //input baud
         cfsetospeed(&tty, B9600); //output baud
     }

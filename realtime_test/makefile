@@ -12,9 +12,10 @@ default:
     $(CC) $(CFLAGS) -c src/tasks/crc32.c -o obj/crc
     $(CC) $(CFLAGS) -c src/tasks/sensor_handler.c -o obj/sensor_handler
     $(CC) $(CFLAGS) -c src/tasks/timer.c -o obj/timer
+    $(CC) $(CFLAGS) -c src/tasks/pololu_servo.c -o obj/pololu_servo
     $(CC) $(CFLAGS) -c src/threads.c -o obj/threads
     $(CC) $(CFLAGS) -c src/main.c -o obj/main
-    $(CC) $(CFLAGS) obj/gpio obj/uart obj/crc obj/sensor_handler obj/timer obj/threads obj/main -o bin/main
+    $(CC) $(CFLAGS) obj/gpio obj/uart obj/crc obj/sensor_handler obj/timer obj/pololu_servo obj/threads obj/main -o bin/main
 
 test:
     mkdir -p bin obj

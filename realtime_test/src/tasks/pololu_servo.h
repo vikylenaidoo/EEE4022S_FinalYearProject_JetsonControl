@@ -1,7 +1,7 @@
 /**
  * default pwm frequency:   f=50Hz ==> T=20ms
- * min width:   992 us
- * max width:   3280 us
+ * absolute min width:   992 us
+ * absolute max width:   3280 us
  * 
  *  
 */
@@ -24,6 +24,12 @@ typedef enum{ //see pg 39 of pololu user guide for details
 
 }Servo_Error_Typedef;
 
+#define MAX_WIDTH_CHANNEL_0  2500
+#define MIN_WIDTH_CHANNEL_0  992
+#define MAX_WIDTH_CHANNEL_1  2000
+#define MIN_WIDTH_CHANNEL_1  992
+#define MAX_WIDTH_CHANNEL_2  3280
+#define MIN_WIDTH_CHANNEL_2  992
 
 //---------------FUNCTIONS--------------//
 

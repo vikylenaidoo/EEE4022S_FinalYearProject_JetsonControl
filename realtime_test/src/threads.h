@@ -7,8 +7,9 @@
 
 #include "tasks/timer.h"
 #include "tasks/gpio.h"
-#include "tasks/uart.h"
+//#include "tasks/uart.h"
 #include "tasks/sensor_handler.h"
+#include "tasks/pololu_servo.h"
 
 //-------------------VARS---------------------//
 #define pin_data_rq 78
@@ -27,6 +28,8 @@ static FILE* fp_data_log; //fp to log all data+timestamp
 static FILE* fp_data_rq; //will hold the file descriptor for the data request pin
 
 //uart vars
+static int serial_port_servo;
+
 static uint8_t uart_read_buffer[256]; //to hold chars recieved from uart
 static int serial_port_data;
 

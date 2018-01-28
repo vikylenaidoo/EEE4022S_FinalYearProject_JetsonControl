@@ -13,13 +13,13 @@ int thread_rt_control(){
     printf("----------------gpio init---------------- \n");    
     fp_data_rq = gpio_init(pin_data_rq, GPIO_OUTPUT);
 
-    //setup uart
-    printf("----------------uart init---------------- \n");    
+    //setup uart for sensor data comms
+    printf("---------------- sensor uart init---------------- \n");    
     int uart_error = uart_init(ttyTHS1, &serial_port_data);
     if(uart_error){
-        printf("Error %i from uart_init: %s\n", uart_error, strerror(uart_error));
+        printf("Error %i from sensor uart init: %s\n", uart_error, strerror(uart_error));
     }
-    printf("serial port opened: %d\n", serial_port_data);
+    printf("sensor serial port opened: %d\n", serial_port_data);
 
     //clear uart recieve buffer
     memset(&uart_read_buffer, '\0', sizeof(uart_read_buffer));
@@ -41,6 +41,23 @@ int thread_rt_control(){
     //control setup
     isAlive = 0; //initially no control action
     controlMode = 0;   //initially manual mode
+
+    //setup pololu servo motors
+    printf("---------------- pololu servo driver init---------------- \n");    
+    uart_error = uart_init(ttyACM0, &serial_port_servo);
+    if(uart_error){
+        printf("Error %i from servo init: %s\n", uart_error, strerror(uart_error));
+    }
+    printf("servo serial port opened: %d\n", serial_port_servo);
+    
+    //disable all servo outputs to zero
+    servo_disable(&serial_port_servo, 0);
+    servo_disable(&serial_port_servo, 1);
+    servo_disable(&serial_port_servo, 2);
+    servo_disable(&serial_port_servo, 3);
+    servo_disable(&serial_port_servo, 4);
+    servo_disable(&serial_port_servo, 5);
+    
 
     //begin action
     while(isRunning){ 
@@ -112,6 +129,16 @@ int thread_rt_control(){
     close(serial_port_data);
     printf("serial port %d closed\n", serial_port_data);
 
+    //kill motors
+    servo_disable(&serial_port_servo, 0);
+    servo_disable(&serial_port_servo, 1);
+    servo_disable(&serial_port_servo, 2);
+    servo_disable(&serial_port_servo, 3);
+    servo_disable(&serial_port_servo, 4);
+    servo_disable(&serial_port_servo, 5);
+    close(serial_port_servo);
+     printf("serial port %d closed\n", serial_port_servo);
+
     //cleanup gpio
     gpio_deinit(fp_data_rq, pin_data_rq);
 	printf("---------exiting gracefully----------------\n");
@@ -126,6 +153,8 @@ int thread_rt_control(){
     return 0;
 }
 
+
+//---------------------------------XBEE THREAD-------------------------------//
 /**
  * xbee telemetry thread. receive remote commands from user
  * and send some onboard data back to be displayed
@@ -197,25 +226,66 @@ int thread_xbee_telemetry(){
                 //printf("%x \n", crc32_1592);
 
                 //perform required function
-                switch(message_data){
+                Servo_Error_Typedef e = SERVO_OK;
+                int pwm_value;
+                switch(message_type){
                     case 0:     //heartbeat
                         break;
 
                     case 1:     //kill
                         isAlive = 0;
+                        printf("---------------kill-----------\n");
+                        e = servo_disable(&serial_port_servo, 0);
+                        if(e){
+                            printf("---------------servo error %d-----------\n", e);
+                        } 
+                        e = servo_disable(&serial_port_servo, 1);
+                        if(e){
+                            printf("---------------servo error %d-----------\n", e);
+                        } 
+                        e = servo_disable(&serial_port_servo, 2);
+                        if(e){
+                            printf("---------------servo error %d-----------\n", e);
+                        } 
                         break;
                      
                     case 2:     //revive
                         isAlive = 1;
+                        printf("---------------revive-----------\n");                                               
                         break;
 
                     case 3:     //throttle
+                        printf("---------------throttle-----------\n");
+                        if(isAlive){
+                            pwm_value = (unsigned int)(((double)message_data/100.0)*(MAX_WIDTH_CHANNEL_0-MIN_WIDTH_CHANNEL_0) + MIN_WIDTH_CHANNEL_0);
+                            e = servo_set_target(&serial_port_servo, 0, pwm_value);
+                            if(e){
+                                printf("---------------servo error %d-----------\n", e);
+                            }
+                        }
                         break;   
                     
                     case 4:     //steering
+                        printf("---------------steering-----------\n");
+                        if(isAlive){
+                            pwm_value = (unsigned int)(((double)message_data/100.0)*(MAX_WIDTH_CHANNEL_1-MIN_WIDTH_CHANNEL_1) + MIN_WIDTH_CHANNEL_1);
+                            e = servo_set_target(&serial_port_servo, 1, pwm_value);
+                            printf("pwm width: %d \n", pwm_value);
+                            if(e){
+                                printf("---------------servo error %d-----------\n", e);
+                            }
+                        }
                         break;
                         
                     case 5:     //tail
+                        printf("---------------throttle-----------\n");
+                        if(isAlive){
+                            pwm_value = ((int)(message_data/100))*(MAX_WIDTH_CHANNEL_2-MIN_WIDTH_CHANNEL_2) + MIN_WIDTH_CHANNEL_2;
+                            e = servo_set_target(&serial_port_servo, 2, pwm_value);
+                            if(e){
+                                printf("---------------servo error %d-----------\n", e);
+                            }
+                        }
                         break;
 
                     default:
@@ -253,6 +323,12 @@ int thread_xbee_telemetry(){
             //isActive = 0;
             xb_drop=0;
             printf("----------emergency kill-----------\n");
+            servo_disable(&serial_port_servo, 0);
+            servo_disable(&serial_port_servo, 1);
+            servo_disable(&serial_port_servo, 2);
+            servo_disable(&serial_port_servo, 3);
+            servo_disable(&serial_port_servo, 4);
+            servo_disable(&serial_port_servo, 5);
         }
         
 
