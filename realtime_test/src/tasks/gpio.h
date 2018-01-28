@@ -35,4 +35,5 @@ GPIO_Error_Typedef gpio_set_value(FILE *fp, GPIO_IO_Value_Typedef val);
 //initialise gpio
 FILE* gpio_init(unsigned int gpio_port, GPIO_Direction_Typedef dir);
 
+//close the gpio
 void gpio_deinit(FILE* fp, unsigned int gpio_port);

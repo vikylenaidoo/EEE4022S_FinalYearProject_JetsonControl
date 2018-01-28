@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
+//#include <stdbool.h>
 
 // Linux headers
 #include <fcntl.h> // Contains file controls like O_RDWR
@@ -14,7 +15,13 @@
 
 //---------------------- DEFINES --------------------------//
 
+typedef enum{
+    ttyTHS1
+
+} UART_ttyDevice;
+
 
 //---------------------- FUNCTIONS --------------------------//
-void uart_init();
-void uart_read(uint8_t* uart_read_buffer);
+int uart_init(UART_ttyDevice device, int *serial_port);
+int uart_read(int *serial_port, void *uart_read_buffer, size_t size);
+void uart_close(int *serial_port);

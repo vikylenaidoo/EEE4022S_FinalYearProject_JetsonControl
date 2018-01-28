@@ -15,8 +15,9 @@ default:
 test:
     mkdir -p bin obj
     $(CC) $(CFLAGS) -c src/tasks/gpio.c -o obj/gpio
-    $(CC) $(CFLAGS) -c src/test.c -o obj/test
-    $(CC) $(CFLAGS) obj/gpio obj/test -o bin/test
+    $(CC) $(CFLAGS) -c src/tasks/uart.c -o obj/uart
+    $(CC) $(CFLAGS) -c src/test_uart.c -o obj/test
+    $(CC) $(CFLAGS) obj/gpio obj/uart obj/test -o bin/test
 
 run:
     sudo ./bin/main

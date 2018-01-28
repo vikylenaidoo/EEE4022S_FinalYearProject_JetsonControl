@@ -70,10 +70,10 @@ FILE* gpio_init(unsigned int gpio_port, GPIO_Direction_Typedef dir){
 	//export pin to gpio directory
 	gpio_export(gpio_port);
 	
-	//set pin as output
+	//set pin as input/output
 	gpio_set_direction(gpio_port, dir);
 	
-	//open fp
+	//open file pointer
 	FILE* fp = gpio_open_file(gpio_port);
 	return fp;
 }
