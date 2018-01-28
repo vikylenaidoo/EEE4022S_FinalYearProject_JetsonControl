@@ -24,6 +24,16 @@ int thread_rt_control(){
     //clear uart recieve buffer
     memset(&uart_read_buffer, '\0', sizeof(uart_read_buffer));
 
+    //setup logging files
+    fp_sensor_log = fopen("data/sensor_data_log", "wb");
+    if(fp_sensor_log==NULL){
+        printf("error opening sensor_log file\n");
+    }
+    fp_gnss_log = fopen("data/gnss_data_log", "wb");
+    if(fp_gnss_log==NULL){
+        printf("error opening gnss_log file\n");
+    }
+
     //setup timer
     printf("----------------timer init---------------- \n");    
     periodic_info_Struct info;
@@ -39,7 +49,7 @@ int thread_rt_control(){
 
         //read uart
         int num_bytes = uart_read(&serial_port_data, &uart_read_buffer, sizeof(uart_read_buffer));
-        printf("bytes: %d\n", num_bytes);
+        //printf("bytes: %d\n", num_bytes);
 
         
 
@@ -59,7 +69,18 @@ int thread_rt_control(){
         gpio_set_value(fp_data_rq, GPIO_LOW);
 
         //log data
-        //@TODO
+        if(fp_sensor_log != NULL){
+            //fseek(fp_sensor_log, 0, SEEK_SET);
+            int wb = fwrite(&time_counter, sizeof(time_counter), 1, fp_sensor_log);
+            wb = fwrite(&Global_Sensor_Data, sizeof(Global_Sensor_Data), 1, fp_sensor_log);
+        }
+
+        if(fp_gnss_log != NULL){
+            //fseek(fp_sensor_log, 0, SEEK_SET);
+            int wb = fwrite(&time_counter, sizeof(time_counter), 1, fp_gnss_log);
+            wb = fwrite(&Global_GNSS_Data, sizeof(Global_GNSS_Data), 1, fp_gnss_log);
+        }
+
 
 
         //wait until next period
@@ -78,6 +99,12 @@ int thread_rt_control(){
     printf("success: %d\n", count_success);
     printf("time: %d ms\n", time_counter*4);
 
+    //close log files
+    if(fp_sensor_log != NULL)
+        fclose(fp_sensor_log);
+    
+    if(fp_gnss_log != NULL)
+        fclose(fp_gnss_log);
 
     return 0;
 }
@@ -154,6 +181,8 @@ int thread_xbee_telemetry(){
     //close the port after application ended
     close(serial_port_xbee);
     printf("serial port %d closed\n", serial_port_xbee);
+
+
 
     return 0;
 } 

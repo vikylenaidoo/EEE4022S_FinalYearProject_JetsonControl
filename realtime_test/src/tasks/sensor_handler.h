@@ -161,8 +161,8 @@ typedef enum{
 
 //---------------------GLOBAL VARS---------------------//
 
-static struct Sensor_Data_Struct Global_Sensor_Data;
-static struct GNSS_Data_Struct Global_GNSS_Data;
+struct Sensor_Data_Struct Global_Sensor_Data;
+struct GNSS_Data_Struct Global_GNSS_Data;
 
 
 

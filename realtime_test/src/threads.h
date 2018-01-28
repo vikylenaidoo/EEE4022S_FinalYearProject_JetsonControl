@@ -16,7 +16,11 @@
 int isActive;
 
 //global time counter
-static long long time_counter = 0; //holds 4ms increments
+static uint32_t time_counter = 0; //holds 4ms increments
+
+//logging vars
+static FILE* fp_sensor_log; //file ptr to log sensor data
+static FILE* fp_gnss_log; //file ptr to log gnss data
 
 //gpio vars
 static FILE* fp_data_rq; //will hold the file descriptor for the data request pin
