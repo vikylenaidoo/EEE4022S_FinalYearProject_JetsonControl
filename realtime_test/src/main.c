@@ -8,9 +8,9 @@ static void terminate_handler(int sig_num);
 
 //------------- THREADS----------------------//
 
-void *thread_function(void *data){
+void *thread_function_rt_control(void *data){
 	printf("thread created!!!\n");
-	test_function();
+	thread_rt_control();
 
 
 	printf("thread ended!!!\n");
@@ -19,10 +19,17 @@ void *thread_function(void *data){
 
 //----------------MAIN FUNCTION-----------------------//
 int main(int argc, char *argv[]){ 
-	
+
+	//create termination interrupt
+	signal(SIGINT, terminate_handler);
+
+	//set isActive flag for all threads to be running
+	isActive = 1; //set to 0 to end program
+
+	//vars for threads setup
 	struct sched_param param;
 	pthread_attr_t attr;
-	pthread_t thread;
+	pthread_t rt_control_pthread;
 	int ret;
 	
 	//lock memory
@@ -65,16 +72,18 @@ int main(int argc, char *argv[]){
 		return ret;
 	}
 	
-	//create pthread with specified attributes
-	ret = pthread_create(&thread, &attr, thread_function, NULL);
+	//create rt control pthread with specified attributes
+	ret = pthread_create(&rt_control_pthread, &attr, thread_function_rt_control, NULL);
 	if(ret){
-		printf("pthread create failed \n");
+		printf("rt control pthread create failed \n");
 		return ret;
 	}
 	
-	
+	//-----------now threads are running------------------//
+
+
 	//join the threads and wait until done
-	ret = pthread_join(thread, NULL);
+	ret = pthread_join(rt_control_pthread, NULL);
 	if(ret){
 		printf("pthread setschedparam failed \n");
 		return ret;
@@ -89,3 +98,15 @@ int main(int argc, char *argv[]){
 
 
 //------------------ AUX FUNCTIONS ------------------//
+
+
+static void terminate_handler(int sig_num){
+	if(sig_num==SIGINT){
+		isActive = 0;
+		//cleanupGPIO(pin_data_rq);
+	}
+	else{
+        printf("termination error, terminating anyways\n");
+        isActive = 0;
+    }
+}

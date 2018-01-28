@@ -16,7 +16,8 @@
 //---------------------- DEFINES --------------------------//
 
 typedef enum{
-    ttyTHS1
+    ttyTHS1,
+    ttyUSB0
 
 } UART_ttyDevice;
 

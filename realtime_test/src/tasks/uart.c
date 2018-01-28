@@ -28,7 +28,9 @@ int uart_init(UART_ttyDevice device, int *serial_port){
     case ttyTHS1:
         *serial_port = open("/dev/ttyTHS1", O_RDWR);
         break;
-    
+    case ttyUSB0:
+        *serial_port = open("/dev/ttyUSB0", O_RDWR);
+        break;
     default:
         *serial_port = -1;
         break;
@@ -78,6 +80,12 @@ int uart_init(UART_ttyDevice device, int *serial_port){
     cfsetispeed(&tty, B460800); //input baud
     cfsetospeed(&tty, B460800); //output baud
 
+    if(device == ttyUSB0){
+        tty.c_cflag &= ~CSTOPB; //single stop bit
+
+        cfsetispeed(&tty, B9600); //input baud
+        cfsetospeed(&tty, B9600); //output baud
+    }
 
     //printf("---------starting uart save-------------\n");
     // Save tty settings, and checking for error
