@@ -25,5 +25,5 @@ typedef enum{
 //---------------------- FUNCTIONS --------------------------//
 int uart_init(UART_ttyDevice device, int *serial_port);
 int uart_read(int *serial_port, void *uart_read_buffer, size_t size);
-int uart_write(int *serial_port, char data[], size_t length);
+int uart_write(int *serial_port, void *data, size_t length);
 void uart_close(int *serial_port);

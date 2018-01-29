@@ -130,7 +130,7 @@ Sensor_Error_Typedef sensor_process_data(uint8_t input_buffer[], uint8_t length)
     }
     
     //sensor_print_data();
-    //print_GNSS_data();
+    print_GNSS_data();
 
     return SENSOR_OK;
 }

@@ -83,6 +83,7 @@ int thread_xbee_telemetry(){
     int uart_error = uart_init(ttyUSB0, &serial_port_xbee);
     if(uart_error){
         printf("Error %i from uart_init: %s\n", uart_error, strerror(uart_error));
+        //isActive=0;
     }
     printf("serial port: %d\n", serial_port_xbee);
 
@@ -98,32 +99,48 @@ int thread_xbee_telemetry(){
     periodic_info_Struct xb_info;
     make_periodic(100, &xb_info); //4ms
 
+    int send_counter = 0;
+
     while(isActive){
 
         //read serial data
         memset(&xbee_read_buffer, '\0', sizeof(xbee_read_buffer));
-/*        int num_bytes = uart_read(&serial_port_xbee, &xbee_read_buffer, sizeof(xbee_read_buffer));
+        int num_bytes = uart_read(&serial_port_xbee, &xbee_read_buffer, sizeof(xbee_read_buffer));
 
-        if(num_bytes){
+        if(num_bytes>0){
             printf("%s \n", xbee_read_buffer);
-            //xb_drop++;
+            //xb_drop=0;
         }
-*/
-        printf("x\n");
+        else{
+            if(xb_drop){
+                xb_drop++;
+            }
+            else{
+                xb_drop = 1;
+            }
+        }
+
+        //printf("x\n");
+        
+        if(xb_drop>10){ //emergency kill
+            //isActive = 0;
+            xb_drop=0;
+            printf("----------emergency kill-----------\n");
+        }
+        
         /*
-        if(xb_drop>100){ //emergency kill
-            isActive = 0;
+        if(send_counter == 20){
+            //send data to xbee
+            char message[] = {'h'};
+            
+            uart_write(&serial_port_xbee, message, sizeof(message));
         }
+        send_counter++;
         */
 
-        //send data to xbee
-        char message[] = {'h'};
-        
-        //uart_write(&serial_port_xbee, message, sizeof(message));
 
         //wait for next period
         wait_period(&xb_info);
-        //clock_nanosleep(CLOCK_MONOTONIC, 0, &deadline, NULL);
     }
 
     //close the port after application ended

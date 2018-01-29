@@ -112,7 +112,7 @@ int uart_read(int *serial_port, void *uart_read_buffer, size_t size){
 /**
  * write bytes to uart
 */
-int uart_write(int *serial_port, char data[], size_t length){
+int uart_write(int *serial_port, void *data, size_t length){
     return write(*serial_port, data, length);
 }
 
