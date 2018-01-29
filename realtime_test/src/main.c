@@ -145,7 +145,7 @@ int main(int argc, char *argv[]){
 		return ret;
 	}
 
-	//-----------now threads are running------------------//
+	//-----------now threads are running. Join when finished------------------//
 
 
 	//join the threads and wait until done

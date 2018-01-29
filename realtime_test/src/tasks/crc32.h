@@ -16,3 +16,8 @@ typedef enum{
 //---------------PUBLIC FUCTIONS---------------------//
 
 uint32_t crc32_calculate(uint32_t data, uint32_t old_crc);
+
+//----------------------crc32 1592 functions--------------// 
+void make_crc_table(void);
+unsigned long update_crc(unsigned long crc, unsigned char *buf, int len);
+unsigned long crc32_1592_calculate(unsigned char *buf, int len);

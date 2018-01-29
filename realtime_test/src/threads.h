@@ -28,7 +28,7 @@ static FILE* fp_data_rq; //will hold the file descriptor for the data request pi
 static uint8_t uart_read_buffer[256]; //to hold chars recieved from uart
 static int serial_port_data;
 
-static uint8_t xbee_read_buffer[64]; //to hold chars recieved from xbee
+static uint8_t xbee_read_buffer[32]; //to hold chars recieved from xbee
 static int serial_port_xbee;
 
 static int count_drops = 0;

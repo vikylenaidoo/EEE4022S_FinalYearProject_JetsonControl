@@ -102,6 +102,7 @@ int thread_rt_control(){
 
 /**
  * xbee telemetry thread. receive remote commands from user
+ * and send some onboard data back to be displayed
 */
 int thread_xbee_telemetry(){
     //starting uart
@@ -109,6 +110,7 @@ int thread_xbee_telemetry(){
     if(uart_error){
         printf("Error %i from uart_init: %s\n", uart_error, strerror(uart_error));
         //isActive=0;
+        //return 1;
     }
     printf("xbee on serial port: %d\n", serial_port_xbee);
 
@@ -118,7 +120,7 @@ int thread_xbee_telemetry(){
 
     //setup timer
     periodic_info_Struct xb_info;
-    make_periodic(100, &xb_info); //4ms
+    make_periodic(50, &xb_info); //4ms
 
     int send_counter = 0;
 
@@ -126,15 +128,60 @@ int thread_xbee_telemetry(){
 
         //read serial data
         memset(&xbee_read_buffer, '\0', sizeof(xbee_read_buffer));
-        int num_bytes = uart_read(&serial_port_xbee, &xbee_read_buffer, sizeof(xbee_read_buffer));
+        int num_bytes = uart_read(&serial_port_xbee, &xbee_read_buffer, sizeof(xbee_read_buffer)); //sizeof(xbee_read_buffer)
         //int num_bytes =0;
 
-        //check for heartbeat
-        if(num_bytes>0){
-            printf("%s \n", xbee_read_buffer);
+        int isMessageValid = 0;
+
+        //check for heartbeat or message
+        //printf("%d bytes read from xb: %s \n", num_bytes, xbee_read_buffer);
+        
+        if(num_bytes==10){ //valid data
+            
             //xb_drop=0;
+
+            //if(num_bytes==10){ //valid data
+                union four_bytes{
+                    uint32_t value;
+                    uint8_t bytes[4];
+                } union_four_bytes;
+
+                uint8_t message_type = xbee_read_buffer[1];
+                
+                //get the message data
+                for (int i = 0; i < 4; i++){
+                    union_four_bytes.bytes[3-i] = xbee_read_buffer[i+2];
+                }                
+                uint32_t message_data = union_four_bytes.value;
+                
+                //get the message crc32
+                for (int i = 0; i < 4; i++){
+                    union_four_bytes.bytes[3-i] = xbee_read_buffer[i+6];
+                }
+                uint32_t message_crc = union_four_bytes.value;
+
+                //printf("%d \t %d \t %x \n", message_type, message_data, message_crc);
+            //}
+
+            //validate checksum
+            uint32_t crc32_1592 = crc32_1592_calculate(&xbee_read_buffer[1], 5);
+            if(crc32_1592 == message_crc){
+                isMessageValid = 1;
+                xb_drop = 0; //reset drop count
+                //printf("%x \n", crc32_1592);
+            }
+            else{
+                printf("invalid data \n");
+            }
+            
         }
-        else{ //heartbeat dropped
+        else{
+            //usleep(1000);
+            //tcflush(serial_port_xbee, TCIFLUSH);
+            //printf("flush\n");
+        }
+
+        if(!isMessageValid){ //heartbeat dropped
             if(xb_drop){
                 xb_drop++;
             }
@@ -143,12 +190,15 @@ int thread_xbee_telemetry(){
             }
         }
 
-        //printf("x\n");
-        
-        if(xb_drop>10){ //emergency kill
+        if(xb_drop>5){
+            printf("dropped: %d\n", xb_drop);
+        }
+
+        //emergency kill
+        if(xb_drop>20){ //more than 1s of dropped pings 
             //isActive = 0;
             xb_drop=0;
-            //printf("----------emergency kill-----------\n");
+            printf("----------emergency kill-----------\n");
         }
         
 

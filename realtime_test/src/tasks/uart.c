@@ -76,13 +76,14 @@ int uart_init(UART_ttyDevice device, int *serial_port){
     tty.c_cc[VMIN] = 0; //amount of chars to read
     tty.c_cc[VTIME] = 0; //timeout of read
 
-    //baud rate: 115200
+    //baud rate: 460800
     cfsetispeed(&tty, B460800); //input baud
     cfsetospeed(&tty, B460800); //output baud
 
     if(device == ttyUSB0){
         tty.c_cflag &= ~CSTOPB; //single stop bit
-        //tty.c_cc[VTIME] = 1;
+        //tty.c_cc[VMIN] = 10; //message size is 10 bytes
+        //tty.c_cc[VTIME] = 1; //timeout (ds)
 
         cfsetispeed(&tty, B9600); //input baud
         cfsetospeed(&tty, B9600); //output baud
