@@ -38,6 +38,9 @@ int main(){
 
         gpio_set_value(gpio_port, GPIO_LOW);
 
+        Sensor_Error_Typedef se = sensor_process_data(uart_read_buffer, (uint8_t)num_bytes);
+        printf("sensor status = %d \n", se);
+
         if(clock_nanosleep(CLOCK_MONOTONIC, 0, &deadline, NULL)){
             //printf("sleep error !!!\n");
         }

@@ -4,6 +4,7 @@
 
 #include "tasks/uart.h"
 #include "tasks/gpio.h"
+#include "tasks/sensor_handler.h"
 
 
 static FILE *gpio_port;

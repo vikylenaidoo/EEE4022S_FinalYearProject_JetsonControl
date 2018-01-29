@@ -21,6 +21,10 @@
 * sensor data starting from 3rd byte
 * gnss ubx message starting from 28th byte
 */
-Sensor_Error_Typedef sensor_process_data(uint8_t input_buffer[LENGTH_SENSOR_DATA], uint8_t length);
+Sensor_Error_Typedef sensor_process_data(uint8_t *in, uint8_t length);
 
 
+/*print the data from global sensor struct*/
+void sensor_print_data();
+
+void print_GNSS_data();

@@ -1,10 +1,10 @@
 //------------------INCLUDES------------------------//
-
+#include <stdint.h>
 
 
 //----------------------DEFINES----------------------//
 
-typedef struct{
+struct Sensor_Data_Struct{
 
     //acceleration data
     int16_t accX;      //12 bits        //2s complement
@@ -27,14 +27,14 @@ typedef struct{
     uint32_t baroTemp;   //20 bits      //unsigned
     
 
-} Sensor_Data_Typedef;
+};// Sensor_Data_Typedef;
 
 /*
 *contains message UBX-NAV-PVT
 *Navigation position velocity time solution
 *see neo-m8t interface guide for more details
 */
-typedef struct{
+struct GNSS_Data_Struct{
     //type      name            unit            description
     //---------------------------------------------------
     uint32_t    GNSS_iTow;      //ms            GPS time of week of the navigation epoch.
@@ -93,7 +93,7 @@ typedef struct{
     uint16_t    GNSS_magAcc;    //deg (1e-2)    Magnetic declination accuracy. Only supported in ADR 4.10 and later
 
 
-} GNSS_Data_Typedef;
+};// GNSS_Data_Typedef;
 
 typedef enum{
     SENSOR_OK=0,
@@ -102,13 +102,9 @@ typedef enum{
     SENSOR_DATA_INVALID
 } Sensor_Error_Typedef;
 
-typedef enum{
-    CRC32_OK=0,
-    CRC32_FAIL
 
-} CRC32_Error_Typedef;
 
 //---------------------GLOBAL VARS---------------------//
 
-Sensor_Data_Typedef Global_Sensor_Data;
-GNSS_Data_Typedef Global_GNSS_Data;
+static struct Sensor_Data_Struct Global_Sensor_Data;
+static struct GNSS_Data_Struct Global_GNSS_Data;

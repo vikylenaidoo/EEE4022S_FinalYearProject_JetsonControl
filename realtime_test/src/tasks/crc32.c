@@ -13,7 +13,7 @@
  * first calc use CRC32_RESET for old_crc
  * if more than 1 word needs to be calculate, use old_crc from previous calc
 */
-uint32_t crc_calculate(uint32_t data, uint32_t old_crc){
+uint32_t crc32_calculate(uint32_t data, uint32_t old_crc){
     
     //initialise
     uint32_t crc = old_crc^data;
