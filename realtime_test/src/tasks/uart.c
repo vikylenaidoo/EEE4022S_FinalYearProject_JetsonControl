@@ -49,7 +49,8 @@ int uart_init(UART_ttyDevice device, int *serial_port){
     //printf("---------starting uart control-------------\n");
     //control modes
     tty.c_cflag &= ~PARENB; //disable parity
-    tty.c_cflag &= ~CSTOPB; //single stop bit
+    //tty.c_cflag &= ~CSTOPB; //single stop bit
+    tty.c_cflag |= CSTOPB; //2 stop bit
     tty.c_cflag |= CS8; // 8 bits per byte
     tty.c_cflag &= ~CRTSCTS; //disable RTS/CTS hardware flow control
     tty.c_cflag |= CREAD | CLOCAL; // Turn on READ & ignore ctrl lines (CLOCAL = 1)
@@ -74,8 +75,8 @@ int uart_init(UART_ttyDevice device, int *serial_port){
     tty.c_cc[VTIME] = 0; //timeout of read
 
     //baud rate: 115200
-    cfsetispeed(&tty, B115200); //input baud
-    cfsetospeed(&tty, B115200); //output baud
+    cfsetispeed(&tty, B460800); //input baud
+    cfsetospeed(&tty, B460800); //output baud
 
 
     //printf("---------starting uart save-------------\n");

@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include "tasks/timer.h"
 #include "tasks/gpio.h"
 #define test_pin 78
 

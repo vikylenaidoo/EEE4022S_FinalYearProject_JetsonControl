@@ -130,7 +130,7 @@ Sensor_Error_Typedef sensor_process_data(uint8_t input_buffer[], uint8_t length)
     }
     
     //sensor_print_data();
-    print_GNSS_data();
+    //print_GNSS_data();
 
     return SENSOR_OK;
 }
@@ -161,5 +161,6 @@ void sensor_print_data(){
 
 void print_GNSS_data(){
     printf("hour:min:sec:nano \t %d : %d : %d : %d \n", Global_GNSS_Data.GNSS_hour,Global_GNSS_Data.GNSS_min, Global_GNSS_Data.GNSS_sec, Global_GNSS_Data.GNSS_iTow);
+    printf("lon:lat \t %d : %d \n", Global_GNSS_Data.GNSS_lon, Global_GNSS_Data.GNSS_lat);
 
 }
