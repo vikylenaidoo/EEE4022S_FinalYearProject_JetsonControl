@@ -75,8 +75,8 @@ struct GNSS_Data_Struct{
                                                 bit5:   confirmedAvai   */
                                                                                                 
     uint8_t     GNSS_numSV;     //              Number of satellites used in Nav Solution
-    int32_t     GNSS_lon;       //deg (1e-7)    longitude
     int32_t     GNSS_lat;       //deg (1e-7)    latitude
+    int32_t     GNSS_lon;       //deg (1e-7)    longitude
     int32_t     GNSS_height;    //mm            height above ellipsoid
     int32_t     GNSS_hMSL;      //mm            height above mean sea level
     uint32_t    GNSS_hAcc;      //mm            horizontal accuracy estimate
@@ -101,6 +101,54 @@ struct GNSS_Data_Struct{
 
 
 };// GNSS_Data_Typedef;
+
+
+struct GNSS_Data_Struct2{ //total 40 bytes
+    //type      name            unit            description
+    //---------------------------------------------------
+    uint8_t     GNSS_fixType;   //              GNSSfix Type:
+                                                /*0: no fix
+                                                1: dead reckoning only
+                                                2: 2D-fix
+                                                3: 3D-fix
+                                                4: GNSS + dead reckoning combined
+                                                5: time only fix */
+    uint8_t     GNSS_flags1;    /*              bit7-6: carrSoln                                                
+                                                bit5:   headVehValid
+                                                bit4-2: psmState
+                                                bit1:   diffSoln
+                                                bit0:   gnssFixOK   */
+                                                                                                
+    uint8_t     GNSS_numSV;     //              Number of satellites used in Nav Solution
+    int32_t     GNSS_lon;       //deg (1e-7)    longitude
+    int32_t     GNSS_lat;       //deg (1e-7)    latitude
+    int32_t     GNSS_height;    //mm            height above ellipsoid
+    int32_t     GNSS_hMSL;      //mm            height above mean sea level
+    int32_t     GNSS_velN;      //mm/s          NED north velocity
+    int32_t     GNSS_velE;      //mm/s          NED east velocity
+    int32_t     GNSS_velD;      //mm/s          NED down velocity
+    int32_t     GNSS_gSpeed;    //mm/s          ground speed (2d)
+    int32_t     GNSS_headMot;   //deg (1e-5)    heading of motion(2d)
+    uint8_t     GNSS_flags3;    /*              bit0 == 1: invalid long, lat, height    */
+    
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 typedef enum{
     SENSOR_OK=0,

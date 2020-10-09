@@ -115,7 +115,7 @@ int main(int argc, char *argv[]){
 		printf("pthread setschedpolicy failed \n");
 		return ret;
 	}
-	xb_param.sched_priority = 97;
+	xb_param.sched_priority = 95;
 	ret = pthread_attr_setschedparam(&xb_attr, &xb_param);
 	if(ret){
 		printf("xb pthread setschedparam failed \n");

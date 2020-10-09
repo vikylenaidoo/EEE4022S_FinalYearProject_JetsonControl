@@ -39,7 +39,7 @@ int thread_rt_control(){
 
         //read uart
         int num_bytes = uart_read(&serial_port_data, &uart_read_buffer, sizeof(uart_read_buffer));
-        //printf("bytes: %d\n", num_bytes);
+        printf("bytes: %d\n", num_bytes);
 
         
 
@@ -58,8 +58,13 @@ int thread_rt_control(){
 
         gpio_set_value(fp_data_rq, GPIO_LOW);
 
+        //log data
+        //@TODO
+
+
         //wait until next period
         wait_period(&info);
+        time_counter++;
     }
     
     //close port
@@ -71,6 +76,8 @@ int thread_rt_control(){
 	printf("---------exiting gracefully----------------\n");
     printf("dropped: %d\n", count_drops);
     printf("success: %d\n", count_success);
+    printf("time: %d ms\n", time_counter*4);
+
 
     return 0;
 }
@@ -85,15 +92,11 @@ int thread_xbee_telemetry(){
         printf("Error %i from uart_init: %s\n", uart_error, strerror(uart_error));
         //isActive=0;
     }
-    printf("serial port: %d\n", serial_port_xbee);
+    printf("xbee on serial port: %d\n", serial_port_xbee);
 
     //clear buffer
     memset(&xbee_read_buffer, '\0', sizeof(xbee_read_buffer));
 
-    //setup delay
-    struct timespec deadline;
-    deadline.tv_sec = 0;//1;//5;
-    deadline.tv_nsec = 500000000;//500000000;//4000000;
 
     //setup timer
     periodic_info_Struct xb_info;
@@ -106,12 +109,14 @@ int thread_xbee_telemetry(){
         //read serial data
         memset(&xbee_read_buffer, '\0', sizeof(xbee_read_buffer));
         int num_bytes = uart_read(&serial_port_xbee, &xbee_read_buffer, sizeof(xbee_read_buffer));
+        //int num_bytes =0;
 
+        //check for heartbeat
         if(num_bytes>0){
             printf("%s \n", xbee_read_buffer);
             //xb_drop=0;
         }
-        else{
+        else{ //heartbeat dropped
             if(xb_drop){
                 xb_drop++;
             }
@@ -125,8 +130,11 @@ int thread_xbee_telemetry(){
         if(xb_drop>10){ //emergency kill
             //isActive = 0;
             xb_drop=0;
-            printf("----------emergency kill-----------\n");
+            //printf("----------emergency kill-----------\n");
         }
+        
+
+        //send monitoring data back to xbee
         
         /*
         if(send_counter == 20){

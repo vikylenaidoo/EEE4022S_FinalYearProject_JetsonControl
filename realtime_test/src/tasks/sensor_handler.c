@@ -120,17 +120,25 @@ Sensor_Error_Typedef sensor_process_data(uint8_t input_buffer[], uint8_t length)
 
     //int i = 34;
     int index = 0;
-    int gnss_length = sizeof(Global_GNSS_Data)/sizeof(uint8_t);
+    int gnss_length = sizeof(Global_GNSS_Data)/sizeof(uint8_t); //should be 40
     //printf("gnss length %d\n", gnss_length);
 
+    
     while(index < gnss_length){
         ((uint8_t*)(&Global_GNSS_Data))[index] = input_buffer[index+34];
         index++;
-
     }
     
+    
+    /*
+    while(index < 40){
+        ((uint8_t*)(&Global_GNSS_Data))[index] = input_buffer[index+28];
+        index++;
+    }
+    */
+
     //sensor_print_data();
-    print_GNSS_data();
+    //print_GNSS_data();
 
     return SENSOR_OK;
 }
@@ -162,5 +170,7 @@ void sensor_print_data(){
 void print_GNSS_data(){
     printf("hour:min:sec:nano \t %d : %d : %d : %d \n", Global_GNSS_Data.GNSS_hour,Global_GNSS_Data.GNSS_min, Global_GNSS_Data.GNSS_sec, Global_GNSS_Data.GNSS_iTow);
     printf("lon:lat \t %d : %d \n", Global_GNSS_Data.GNSS_lon, Global_GNSS_Data.GNSS_lat);
-
+    //printf("num sat %d \n", Global_GNSS_Data.GNSS_numSV);
+    //printf("height, hMSL \t %d, %d \n", Global_GNSS_Data.GNSS_height, Global_GNSS_Data.GNSS_hMSL);
+    
 }

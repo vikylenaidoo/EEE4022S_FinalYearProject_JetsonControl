@@ -15,6 +15,9 @@
 
 int isActive;
 
+//global time counter
+static long long time_counter = 0; //holds 4ms increments
+
 //gpio vars
 static FILE* fp_data_rq; //will hold the file descriptor for the data request pin
 
