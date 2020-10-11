@@ -25,22 +25,21 @@ int thread_rt_control(){
     memset(&uart_read_buffer, '\0', sizeof(uart_read_buffer));
 
     //setup logging files
-    fp_sensor_log = fopen("data/sensor_data_log", "wb");
-    if(fp_sensor_log==NULL){
-        printf("error opening sensor_log file\n");
+    fp_data_log = fopen("data/data_log", "wb");
+    if(fp_data_log==NULL){
+        printf("error opening data_log file\n");
     }
-    fp_gnss_log = fopen("data/gnss_data_log", "wb");
-    if(fp_gnss_log==NULL){
-        printf("error opening gnss_log file\n");
-    }
+
+    //timestamp for logging
+    struct timespec timestamp;
 
     //setup timer
     printf("----------------timer init---------------- \n");    
     periodic_info_Struct info;
     make_periodic(4, &info); //4ms
 
-
-    while(isActive){
+    //begin action
+    while(isActive){ 
 
         //request data
         if(gpio_set_value(fp_data_rq, GPIO_HIGH)){
@@ -51,7 +50,8 @@ int thread_rt_control(){
         int num_bytes = uart_read(&serial_port_data, &uart_read_buffer, sizeof(uart_read_buffer));
         //printf("bytes: %d\n", num_bytes);
 
-        
+        //update timestamp
+        clock_gettime(CLOCK_REALTIME, &timestamp);
 
         //process sensor data and pack into struct
         Sensor_Error_Typedef se = sensor_process_data(uart_read_buffer, (uint8_t)num_bytes);
@@ -63,24 +63,18 @@ int thread_rt_control(){
         }
         else{
             count_success++;
-
+            
+            //log data
+            if(fp_data_log != NULL){
+                //fseek(fp_sensor_log, 0, SEEK_SET);
+                int wb = fwrite(&(timestamp), sizeof(timestamp), 1, fp_data_log); //log timestamp (16 bytes)
+                wb = fwrite(uart_read_buffer, num_bytes, 1, fp_data_log); //log actual data
+                //total size per block = 8+8+132=148
+                
+            }
         }
 
         gpio_set_value(fp_data_rq, GPIO_LOW);
-
-        //log data
-        if(fp_sensor_log != NULL){
-            //fseek(fp_sensor_log, 0, SEEK_SET);
-            int wb = fwrite(&time_counter, sizeof(time_counter), 1, fp_sensor_log);
-            wb = fwrite(&Global_Sensor_Data, sizeof(Global_Sensor_Data), 1, fp_sensor_log);
-        }
-
-        if(fp_gnss_log != NULL){
-            //fseek(fp_sensor_log, 0, SEEK_SET);
-            int wb = fwrite(&time_counter, sizeof(time_counter), 1, fp_gnss_log);
-            wb = fwrite(&Global_GNSS_Data, sizeof(Global_GNSS_Data), 1, fp_gnss_log);
-        }
-
 
 
         //wait until next period
@@ -100,11 +94,8 @@ int thread_rt_control(){
     printf("time: %d ms\n", time_counter*4);
 
     //close log files
-    if(fp_sensor_log != NULL)
-        fclose(fp_sensor_log);
-    
-    if(fp_gnss_log != NULL)
-        fclose(fp_gnss_log);
+    if(fp_data_log != NULL)
+        fclose(fp_data_log);
 
     return 0;
 }
