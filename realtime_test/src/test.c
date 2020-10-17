@@ -25,7 +25,7 @@ int test_function(){
 
     printf("------------starting test sequence !!!-------------\n");
     
-    while (isActive){
+    while (isRunning){
         
         /*
         if(clock_nanosleep(CLOCK_MONOTONIC, 0, &deadline, NULL)){
@@ -62,7 +62,7 @@ static void cleanupGPIO(){
     gpio_deinit(test_fp, 78);
 	printf("exiting gracefully\n");
 
-	isActive = 0;
+	isRunning = 0;
 
 }
 
@@ -72,6 +72,6 @@ static void terminate_handler(int sig_num){
 	}
 	else{
         printf("termination error\n");
-        isActive = 0;
+        isRunning = 0;
     }
 }

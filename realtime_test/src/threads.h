@@ -13,7 +13,9 @@
 //-------------------VARS---------------------//
 #define pin_data_rq 78
 
-int isActive;
+int isRunning;
+int isAlive; 
+int controlMode; //0=manual; 1=control;
 
 //global time counter
 static uint32_t time_counter = 0; //holds 4ms increments

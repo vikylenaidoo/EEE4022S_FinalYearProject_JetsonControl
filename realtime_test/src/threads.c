@@ -38,8 +38,12 @@ int thread_rt_control(){
     periodic_info_Struct info;
     make_periodic(4, &info); //4ms
 
+    //control setup
+    isAlive = 0; //initially no control action
+    controlMode = 0;   //initially manual mode
+
     //begin action
-    while(isActive){ 
+    while(isRunning){ 
 
         //request data
         if(gpio_set_value(fp_data_rq, GPIO_HIGH)){
@@ -63,6 +67,24 @@ int thread_rt_control(){
         }
         else{
             count_success++;
+
+            //update control action
+            
+            if(isAlive){ 
+                if(controlMode==0){ //normal mode
+                    
+
+                }
+                else{ //auto control mode
+                    //@todo
+
+                }
+            }
+            else{ //disable all motion
+                //throttle off
+                //reset steering
+                //reset tail
+            }
             
             //log data
             if(fp_data_log != NULL){
@@ -72,6 +94,10 @@ int thread_rt_control(){
                 //total size per block = 8+8+132=148
                 
             }
+
+            //send certain data to xbee fro ui display
+            //@todo
+
         }
 
         gpio_set_value(fp_data_rq, GPIO_LOW);
@@ -124,7 +150,7 @@ int thread_xbee_telemetry(){
 
     int send_counter = 0;
 
-    while(isActive){
+    while(isRunning){
 
         //read serial data
         memset(&xbee_read_buffer, '\0', sizeof(xbee_read_buffer));
@@ -169,6 +195,34 @@ int thread_xbee_telemetry(){
                 isMessageValid = 1;
                 xb_drop = 0; //reset drop count
                 //printf("%x \n", crc32_1592);
+
+                //perform required function
+                switch(message_data){
+                    case 0:     //heartbeat
+                        break;
+
+                    case 1:     //kill
+                        isAlive = 0;
+                        break;
+                     
+                    case 2:     //revive
+                        isAlive = 1;
+                        break;
+
+                    case 3:     //throttle
+                        break;   
+                    
+                    case 4:     //steering
+                        break;
+                        
+                    case 5:     //tail
+                        break;
+
+                    default:
+                        break;                                                                
+
+                }
+
             }
             else{
                 printf("invalid data \n");

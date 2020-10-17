@@ -8,6 +8,6 @@
 #define test_pin 78
 
 static FILE* test_fp;
-static int isActive = 1;
+static int isRunning = 1;
 
 int test_function();

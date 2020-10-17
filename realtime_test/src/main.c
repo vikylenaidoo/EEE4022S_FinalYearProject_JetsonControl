@@ -33,7 +33,7 @@ int main(int argc, char *argv[]){
 	signal(SIGINT, terminate_handler);
 
 	//set isActive flag for all threads to be running
-	isActive = 1; //set to 0 to end program
+	isRunning = 1; //set to 0 to end program
 
 	
 	//vars for threads setup
@@ -174,12 +174,12 @@ int main(int argc, char *argv[]){
 
 static void terminate_handler(int sig_num){
 	if(sig_num==SIGINT){
-		isActive = 0;
+		isRunning = 0;
 		//cleanupGPIO(pin_data_rq);
 	}
 	else{
         printf("termination error, terminating anyways\n");
-        isActive = 0;
+        isRunning = 0;
     }
 }
 

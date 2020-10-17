@@ -30,12 +30,12 @@ int main(){
     periodic_info_Struct xb_info;
     make_periodic(100, &xb_info); //4ms
 
-    isActive = 1;
+    isRunning = 1;
     
 
     printf("---------starting test-------------\n");
     printf("size:   %ld\n", sizeof(xbee_read_buffer));
-    while(isActive){
+    while(isRunning){
         
         //gpio_set_value(gpio_port, GPIO_HIGH);
 
@@ -90,10 +90,10 @@ static void cleanupGPIO(){
 static void terminate_handler(int sig_num){
 	if(sig_num==SIGINT){
 		//cleanupGPIO(gpio_port);
-        isActive=0;
+        isRunning=0;
 	}
 	else{
         printf("termination error\n");
-        isActive = 0;
+        isRunning = 0;
     }
 }
