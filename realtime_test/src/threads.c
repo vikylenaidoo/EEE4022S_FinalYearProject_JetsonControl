@@ -133,9 +133,6 @@ int thread_rt_control(){
     servo_disable(&serial_port_servo, 0);
     servo_disable(&serial_port_servo, 1);
     servo_disable(&serial_port_servo, 2);
-    servo_disable(&serial_port_servo, 3);
-    servo_disable(&serial_port_servo, 4);
-    servo_disable(&serial_port_servo, 5);
     close(serial_port_servo);
      printf("serial port %d closed\n", serial_port_servo);
 
@@ -320,29 +317,116 @@ int thread_xbee_telemetry(){
 
         //emergency kill
         if(xb_drop>20){ //more than 1s of dropped pings 
-            //isActive = 0;
+            isAlive = 0;
             xb_drop=0;
             printf("----------emergency kill-----------\n");
             servo_disable(&serial_port_servo, 0);
             servo_disable(&serial_port_servo, 1);
             servo_disable(&serial_port_servo, 2);
-            servo_disable(&serial_port_servo, 3);
-            servo_disable(&serial_port_servo, 4);
-            servo_disable(&serial_port_servo, 5);
+            
         }
         
 
         //send monitoring data back to xbee
-        
-        /*
-        if(send_counter == 20){
+        if(send_counter >= 5){
             //send data to xbee
-            char message[] = {'h'};
+            uint8_t message[68]; //28sensor+36gnss+4crc=68 bytes
             
-            uart_write(&serial_port_xbee, message, sizeof(message));
+
+            //everything in sensorData_struct
+            union{
+                uint8_t bytes[sizeof(Global_Sensor_Data)];
+                struct Sensor_Data_Struct data_struct;
+            } sensor_data_union;
+
+            sensor_data_union.data_struct = Global_Sensor_Data;
+            int i=0;
+            for(i; i<sizeof(Global_Sensor_Data); i++){
+                message[i] = sensor_data_union.bytes[i];
+            }
+            
+
+            //specific gnss data
+            union{
+                uint8_t bytes[4];
+                uint32_t value;
+            } four_bytes_union;
+            
+            four_bytes_union.value = Global_GNSS_Data.GNSS_lat;
+            for(int j=0; j<4; j++){
+                message[i] = four_bytes_union.bytes[j];
+                i++;
+            }
+
+            four_bytes_union.value = Global_GNSS_Data.GNSS_lon;
+            for(int j=0; j<4; j++){
+                message[i] = four_bytes_union.bytes[j];
+                i++;
+            }
+
+            four_bytes_union.value = Global_GNSS_Data.GNSS_velN;
+            for(int j=0; j<4; j++){
+                message[i] = four_bytes_union.bytes[j];
+                i++;
+            }
+
+            four_bytes_union.value = Global_GNSS_Data.GNSS_velE;
+            for(int j=0; j<4; j++){
+                message[i] = four_bytes_union.bytes[j];
+                i++;
+            }
+
+            four_bytes_union.value = Global_GNSS_Data.GNSS_velD;
+            for(int j=0; j<4; j++){
+                message[i] = four_bytes_union.bytes[j];
+                i++;
+            }
+
+            four_bytes_union.value = Global_GNSS_Data.GNSS_height;
+            for(int j=0; j<4; j++){
+                message[i] = four_bytes_union.bytes[j];
+                i++;
+            }
+            
+            four_bytes_union.value = Global_GNSS_Data.GNSS_hMSL;
+            for(int j=0; j<4; j++){
+                message[i] = four_bytes_union.bytes[j];
+                i++;
+            }
+
+            four_bytes_union.value = Global_GNSS_Data.GNSS_gSpeed;
+            for(int j=0; j<4; j++){
+                message[i] = four_bytes_union.bytes[j];
+                i++;
+            }
+
+            four_bytes_union.value = Global_GNSS_Data.GNSS_headMot;
+            for(int j=0; j<4; j++){
+                message[i] = four_bytes_union.bytes[j];
+                i++;
+            }
+
+            //calculate crc32
+            uint32_t crc_telemetry_send = crc32_1592_calculate(message, 64);
+            //printf("crc: %x \n", crc_telemetry_send);
+            four_bytes_union.value = crc_telemetry_send;
+            for(int j=0; j<4; j++){
+                message[i] = four_bytes_union.bytes[j];
+                i++;
+            }
+
+            //printf("%x %x %x %x  \n", message[64], message[65], message[66], message[67]);
+            //write the data
+            if(serial_port_xbee != -1){
+                uart_write(&serial_port_xbee, message, sizeof(message));
+            }
+            
+            
+            send_counter=0;
         }
-        send_counter++;
-        */
+        else{
+            send_counter++;
+        }
 
 
         //wait for next period

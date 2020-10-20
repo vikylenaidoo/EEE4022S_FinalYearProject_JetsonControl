@@ -47,7 +47,7 @@ Servo_Error_Typedef servo_set_target(int *serial_port, uint8_t channel, unsigned
     
     uart_write(serial_port, message, sizeof(message));
     
-    printf("%x %x %x %x\n", message[0], message[1], message[2], message[3]);
+    //printf("%x %x %x %x\n", message[0], message[1], message[2], message[3]);
     return servo_get_errors(serial_port);
 
 }
