@@ -36,7 +36,7 @@ int thread_rt_control(){
     //setup timer
     printf("----------------timer init---------------- \n");    
     periodic_info_Struct info;
-    make_periodic(4, &info); //4ms
+    make_periodic(RT_PERIOD, &info); //4ms
 
     //control setup
     isAlive = 0; //initially no control action

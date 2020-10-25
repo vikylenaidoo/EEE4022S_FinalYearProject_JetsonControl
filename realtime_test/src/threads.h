@@ -14,9 +14,13 @@
 //-------------------VARS---------------------//
 #define pin_data_rq 78
 
+#define RT_PERIOD   10   //change this to choose control loop frequency (ms)
+
+//status flags
 int isRunning;  //determines if the entire program is running. if isRunning==0, program exits
 int isAlive;    //determines the status of the cars motion
 int controlMode; //0=manual; 1=control;
+
 
 //global time counter
 static uint32_t time_counter = 0; //holds 4ms increments

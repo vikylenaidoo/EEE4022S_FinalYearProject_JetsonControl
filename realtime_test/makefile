@@ -28,16 +28,20 @@ test:
     $(CC) $(CFLAGS)  obj/uart obj/timer obj/test -o bin/test
 
 read_log:
+    mkdir -p bin obj
     $(CC) $(CFLAGS) -c src/tasks/crc32.c -o obj/crc
     $(CC) $(CFLAGS) -c src/tasks/sensor_handler.c -o obj/sensor_handler
     $(CC) $(CFLAGS) -c src/lib/gnuplot_i.c -o obj/gnuplot
     $(CC) $(CFLAGS) -c src/read_log.c -o obj/read_log
-    $(CC) $(CFLAGS)  obj/crc obj/sensor_handler obj/gnuplot obj/read_log -o bin/main
+    $(CC) $(CFLAGS)  obj/crc obj/sensor_handler obj/gnuplot obj/read_log -o bin/log
 run:
     sudo ./bin/main
 
 runtest:
     sudo ./bin/test
+
+runlog:
+   sudo ./bin/log
 
 clean:
     rm $(PROG) $(OBJS)
