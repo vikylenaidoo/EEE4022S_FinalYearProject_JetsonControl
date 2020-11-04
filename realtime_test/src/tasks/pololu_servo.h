@@ -24,10 +24,15 @@ typedef enum{ //see pg 39 of pololu user guide for details
 
 }Servo_Error_Typedef;
 
-#define MAX_WIDTH_CHANNEL_0  1280
-#define MIN_WIDTH_CHANNEL_0  992
-#define MAX_WIDTH_CHANNEL_1  1280
-#define MIN_WIDTH_CHANNEL_1  992
+//throttle
+#define MAX_WIDTH_CHANNEL_0  2000
+#define MIN_WIDTH_CHANNEL_0  1000
+
+//steering
+#define MAX_WIDTH_CHANNEL_1  1840
+#define MIN_WIDTH_CHANNEL_1  1250
+
+//tail
 #define MAX_WIDTH_CHANNEL_2  1280
 #define MIN_WIDTH_CHANNEL_2  992
 

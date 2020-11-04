@@ -72,7 +72,7 @@ int thread_rt_control(){
         //printf("bytes: %d\n", num_bytes);
 
         //update timestamp
-        clock_gettime(CLOCK_REALTIME, &timestamp);
+        clock_gettime(CLOCK_MONOTONIC, &timestamp); //CLOCK_REALTIME
 
         //process sensor data and pack into struct
         Sensor_Error_Typedef se = sensor_process_data(uart_read_buffer, (uint8_t)num_bytes);
@@ -134,7 +134,7 @@ int thread_rt_control(){
     servo_disable(&serial_port_servo, 1);
     servo_disable(&serial_port_servo, 2);
     close(serial_port_servo);
-     printf("serial port %d closed\n", serial_port_servo);
+    printf("serial port %d closed\n", serial_port_servo);
 
     //cleanup gpio
     gpio_deinit(fp_data_rq, pin_data_rq);
@@ -232,14 +232,17 @@ int thread_xbee_telemetry(){
                     case 1:     //kill
                         isAlive = 0;
                         printf("---------------kill-----------\n");
+                        servo_set_target(&serial_port_servo, 0, 1500);
                         e = servo_disable(&serial_port_servo, 0);
                         if(e){
                             printf("---------------servo error %d-----------\n", e);
                         } 
+                        servo_set_target(&serial_port_servo, 1, 1500);
                         e = servo_disable(&serial_port_servo, 1);
                         if(e){
                             printf("---------------servo error %d-----------\n", e);
                         } 
+                        servo_set_target(&serial_port_servo, 1, 1500);
                         e = servo_disable(&serial_port_servo, 2);
                         if(e){
                             printf("---------------servo error %d-----------\n", e);
@@ -253,6 +256,7 @@ int thread_xbee_telemetry(){
 
                     case 3:     //throttle
                         printf("---------------throttle-----------\n");
+                        controlMode = 0; //manual
                         if(isAlive){
                             pwm_value = (unsigned int)(((double)message_data/100.0)*(MAX_WIDTH_CHANNEL_0-MIN_WIDTH_CHANNEL_0) + MIN_WIDTH_CHANNEL_0);
                             e = servo_set_target(&serial_port_servo, 0, pwm_value);
@@ -264,6 +268,7 @@ int thread_xbee_telemetry(){
                     
                     case 4:     //steering
                         printf("---------------steering-----------\n");
+                        controlMode = 0; //manual
                         if(isAlive){
                             pwm_value = (unsigned int)(((double)message_data/100.0)*(MAX_WIDTH_CHANNEL_1-MIN_WIDTH_CHANNEL_1) + MIN_WIDTH_CHANNEL_1);
                             e = servo_set_target(&serial_port_servo, 1, pwm_value);
@@ -276,6 +281,7 @@ int thread_xbee_telemetry(){
                         
                     case 5:     //tail
                         printf("---------------throttle-----------\n");
+                        controlMode = 0; //manual
                         if(isAlive){
                             pwm_value = ((int)(message_data/100))*(MAX_WIDTH_CHANNEL_2-MIN_WIDTH_CHANNEL_2) + MIN_WIDTH_CHANNEL_2;
                             e = servo_set_target(&serial_port_servo, 2, pwm_value);

@@ -32,16 +32,19 @@ int main(int argc, char *argv[]){
     //setup gnuplot
     gnuplot_ctrl *handle;
     handle = gnuplot_init();
-    gnuplot_setstyle(handle, "points");
+    gnuplot_setstyle(handle, "lines");
     sleep(1);
 
     int n = file_size/data_size;
     double t[n];
-    double x[n];
-    int y[n];
-    int z[n];
+    double lon[n];
+    double lat[n];
+    double hour[n];
+    double min[n];
+    double sec[n];
+    int nano[n];
 
-    printf("----------startinf file read---------------\n");
+    printf("----------starting file read---------------\n");
     int i = 0;
     while(i<n){
         r = fread(data, data_size, 1, fp_log);
@@ -52,10 +55,20 @@ int main(int argc, char *argv[]){
         Sensor_Error_Typedef se = sensor_process_data(data + 16, data_size - 16);
         if(!se){
             //print_GNSS_data();
-            t[i] = i;//timestamp.tv_nsec;
-            x[i] = Global_GNSS_Data.GNSS_lat*1e-7;//Global_Sensor_Data.accX;
-            y[i] = Global_Sensor_Data.accY;
-            z[i] = Global_Sensor_Data.accZ;
+            t[i] =  i*4; //timestamp.tv_nsec; //i*4; //ms
+            lon[i] = (double)Global_GNSS_Data.GNSS_lon*1e-7; //Global_Sensor_Data.accX;
+            lat[i] = (double)Global_GNSS_Data.GNSS_lat*1e-7;//Global_Sensor_Data.accY;
+            hour[i] = (double)Global_GNSS_Data.GNSS_hour;//Global_Sensor_Data.accZ;
+            min[i] = (double)Global_GNSS_Data.GNSS_min;
+            sec[i] = (double)Global_GNSS_Data.GNSS_sec;
+            nano[i] = Global_GNSS_Data.GNSS_nano;
+
+            //printf("%f \t %f \t %f \t %f \n", t[i], x[i], y[i], z[i]);
+
+            if(nano[i] != nano[i-1]){
+                printf("%d \t||\t %d:%d:%2d:%9d \t %f:%f \n", (int)t[i], (int)hour[i], (int)min[i], (int)sec[i], nano[i], lon[i], lat[i]);
+
+            }
         }
         else{
             printf("read error");
@@ -70,7 +83,8 @@ int main(int argc, char *argv[]){
     //plot graph
     gnuplot_cmd(handle, "set terminal png");
 	gnuplot_cmd(handle, "set output \"log_graph.png\"");
-    gnuplot_plot_xy(handle, t, x, n, "x Accelrations") ;
+    gnuplot_plot_xy(handle, t, lon, n, "x") ;
+    gnuplot_plot_xy(handle, t, lat, n, "x") ;
 
     printf("-------------done----------------\n");
 
