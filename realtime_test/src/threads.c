@@ -30,6 +30,13 @@ int thread_rt_control(){
         printf("error opening data_log file\n");
     }
 
+    fp_error_log = fopen("data/error_log.txt", "w");
+    if(fp_error_log==NULL){
+        printf("error opening error_log file\n");
+    }
+    fprintf(fp_error_log, "error file opened\n");
+    
+
     //timestamp for logging
     struct timespec timestamp;
 
@@ -112,9 +119,6 @@ int thread_rt_control(){
                 
             }
 
-            //send certain data to xbee fro ui display
-            //@todo
-
         }
 
         gpio_set_value(fp_data_rq, GPIO_LOW);
@@ -146,6 +150,9 @@ int thread_rt_control(){
     //close log files
     if(fp_data_log != NULL)
         fclose(fp_data_log);
+
+    if(fp_error_log != NULL)
+        fclose(fp_error_log);
 
     return 0;
 }
@@ -315,10 +322,16 @@ int thread_xbee_telemetry(){
             else{
                 xb_drop = 1;
             }
+
+            
+            
         }
 
         if(xb_drop>5){
             printf("dropped: %d\n", xb_drop);
+            //log error message
+            if(fp_error_log != NULL)
+                fprintf(fp_error_log, "xb dropped: \t %d\n", xb_drop);
         }
 
         //emergency kill
@@ -329,6 +342,8 @@ int thread_xbee_telemetry(){
             servo_disable(&serial_port_servo, 0);
             servo_disable(&serial_port_servo, 1);
             servo_disable(&serial_port_servo, 2);
+
+            
             
         }
         

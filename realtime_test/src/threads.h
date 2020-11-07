@@ -27,6 +27,7 @@ static uint32_t time_counter = 0; //holds 4ms increments
 
 //logging vars
 static FILE* fp_data_log; //fp to log all data+timestamp
+static FILE* fp_error_log; //fp to log all errors and messages
 
 //gpio vars
 static FILE* fp_data_rq; //will hold the file descriptor for the data request pin
