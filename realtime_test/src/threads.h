@@ -14,7 +14,7 @@
 //-------------------VARS---------------------//
 #define pin_data_rq 78
 
-#define RT_PERIOD   4//20   //change this to choose control loop frequency (ms)
+#define RT_PERIOD   20   //change this to choose control loop frequency (ms)
 
 //status flags
 int isRunning;  //determines if the entire program is running. if isRunning==0, program exits

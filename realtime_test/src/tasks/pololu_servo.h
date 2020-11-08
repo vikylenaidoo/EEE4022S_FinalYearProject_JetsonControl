@@ -33,8 +33,8 @@ typedef enum{ //see pg 39 of pololu user guide for details
 #define MIN_WIDTH_CHANNEL_1  1250
 
 //tail
-#define MAX_WIDTH_CHANNEL_2  1280
-#define MIN_WIDTH_CHANNEL_2  992
+#define MAX_WIDTH_CHANNEL_2  2000
+#define MIN_WIDTH_CHANNEL_2  1000
 
 //---------------FUNCTIONS--------------//
 

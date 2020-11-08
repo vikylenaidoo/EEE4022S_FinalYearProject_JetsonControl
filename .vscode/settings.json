@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "cstdint": "cpp",
-        "limits": "cpp"
+        "limits": "cpp",
+        "cstdio": "cpp"
     }
 }

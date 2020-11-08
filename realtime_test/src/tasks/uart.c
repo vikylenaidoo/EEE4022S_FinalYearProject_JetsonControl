@@ -32,7 +32,7 @@ int uart_init(UART_ttyDevice device, int *serial_port){
         *serial_port = open("/dev/ttyUSB0", O_RDWR);
         break;
     case ttyACM0:
-        *serial_port = open("/dev/ttyACM1", O_RDWR);
+        *serial_port = open("/dev/ttyACM0", O_RDWR);
         break;
     default:
         *serial_port = -1;
